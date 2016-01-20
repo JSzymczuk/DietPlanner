@@ -1,0 +1,70 @@
+﻿@model IEnumerable<DietPlanner.ViewModels.UnitInfoModel>
+
+@{
+    ViewBag.Title = "Measures";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateMeasure")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BaseUnitName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Base)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Derived)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsGeneralMeasure)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+            @if (item.NamePlural1 != string.Empty)
+            {
+                @: / 2 @Html.DisplayFor(modelItem => item.NamePlural1)
+            }
+            @if (item.NamePlural2 != string.Empty)
+            {
+                @: / 5 @Html.DisplayFor(modelItem => item.NamePlural2)
+            }
+            @if (item.NameDecimal != string.Empty)
+            {
+                @: / 0.5 @Html.DisplayFor(modelItem => item.NameDecimal)
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BaseUnitName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Base)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Derived)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsGeneralMeasure)
+        </td>
+        <td>
+            @if (!item.Verified)
+            {
+                @Html.ActionLink("Delete", "DeleteMeasure", new { id = item.Id })
+            }
+        </td>
+    </tr>
+}
+
+</table>

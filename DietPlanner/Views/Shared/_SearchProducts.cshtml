@@ -1,0 +1,58 @@
+﻿@using DietPlanner.Helpers;
+
+@{
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "searchResult",
+        InsertionMode = InsertionMode.Replace
+    };
+}
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@using (Ajax.BeginForm("SearchProducts", "Product", null, options, new { @id = "search-form" }))
+{
+    @(Html.TextBox("keyword", string.Empty,
+        new { @id = "search-keyword", @class = "form-control", @placeholder = "Nazwa produktu" }))
+    @(Html.DropDownList("category", ViewBag.OrderedCategories as SelectList, "--Wybierz kategorię--",
+         new { @id = "search-category", @class = "form-control" }))
+    @Html.Label("Produktów na stronie", new { @class = "col-md-2 control-label" })
+    @(Html.DropDownList("pageSize", new SelectList(new List<int> { 3, 5, 10, 20 }, 10),
+         new { @id = "search-page-size", @class = "form-control" }))
+
+    <br />
+    <div id="show-advanced">
+        <a onclick="showAdvanced();">Pokaż zaawansowane</a>
+    </div>
+    <div id="search-advanced" style="display: none;">
+        <a onclick="hideAdvanced();">Ukryj zaawansowane</a>
+        <br />
+        @Html.Label("Sortowanie: ", new { @class = "col-md-2 control-label" })
+        @Html.DropDownList("sortType", ProductHelper.EnumProductSortType, null, new { @class = "form-control" })
+        <br />
+        @Html.Label("Proteiny: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBox("minP", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBox("maxP", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.Label("Tłuszcz: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBox("minF", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBox("maxF", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.Label("Węglowodany: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBox("minC", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBox("maxC", null, new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.CheckBox("glutenFree", false, new { })
+        @Html.Label(" Tylko produkty bezglutenowe")
+        <br />
+        <input id="search-clear" type="button" value="Wyczyść" />
+        <input id="search-submit" type="button" value="Filtruj" />
+    </div>
+}
+
+<div id="searchResult">
+    @Html.Action("SearchProducts", new { keyword = "" })
+</div>

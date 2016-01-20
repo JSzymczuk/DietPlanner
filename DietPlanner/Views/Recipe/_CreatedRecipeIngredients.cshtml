@@ -1,0 +1,21 @@
+﻿@using DietPlanner.Helpers;
+@using DietPlanner.ViewModels;
+@model ICollection<IngredientCreateViewModel>
+
+<br />
+
+    @if (Model.Count > 0)
+    {
+        <table>
+            @foreach (var ingr in Model)
+            {
+                
+
+            }
+            <tr><td id="total-nutr">@Html.Raw(@RecipeHelper.GetTotalNutritionString(Model))</td></tr>
+        </table>
+    }
+    else
+    {
+        <h4>Lista składników jest pusta.</h4>
+    }

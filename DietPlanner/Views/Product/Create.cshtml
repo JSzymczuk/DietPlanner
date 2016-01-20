@@ -1,0 +1,210 @@
+﻿@using DietPlanner.Helpers;
+@using DietPlanner.ViewModels;
+@model AddProductViewModel
+
+@{
+    ViewBag.Title = "Dodaj nowy produkt";
+    AjaxOptions options = new AjaxOptions
+    {
+        HttpMethod = "Post",
+        OnBegin = "$('#loading_modal').modal('show');",
+        OnFailure = "$('#loading_modal').modal('hide');",
+        OnSuccess = "submitProductMeasures"
+    };
+}
+
+<h2>@ViewBag.Title.</h2>
+
+@using (Ajax.BeginForm("Create", "Product", options, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Dodaj nowy produkt.</h4>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+        
+    <div class="form-group">
+        @Html.LabelFor(m => m.ProductName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ProductName, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CategoryId, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10" id="select-category">
+        @foreach (var selectList in Model.CategoryTree)
+        {
+             Guid guid = (Guid)selectList.Key;
+             @Html.DropDownList(guid == Guid.Empty ? "CategoryId" : "notused", 
+             selectList.Value as SelectList, "--Wybierz kategorię--", 
+             new { @class = "form-control", 
+                   @id = "CategoryId-" + guid.ToString(),
+                   @style = guid != Guid.Empty ? "display: none;" : "display: block;",
+                   @onchange = "addCategorySelectionLevel(this);"
+             })
+        }
+        </div>
+    </div>
+    
+    @Html.HiddenFor(model => model.UnitId)
+
+    <h4>Wartość odżywcza w 100 g produktu:</h4>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Protein, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Protein, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(m => m.Carbohydrate, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Carbohydrate, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Sugar, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Sugar, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Fiber, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Fiber, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Fat, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Fat, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.SaturatedFat, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.SaturatedFat, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(m => m.Cholesterol, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Cholesterol, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Salt, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Salt, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(m => m.Water, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Water, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Alcohol, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Alcohol, new { @class = "form-control", @type = "number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.GlutenCategory, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownList("GlutenCategory", ProductHelper.EnumGlutenCategory, null, new { @class = "form-control" })
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Dodaj" />
+        </div>
+    </div>
+}
+
+<div id="product-measures">
+    @Html.Action("CreateProductMeasures")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    function submitProductMeasures(data, status, xhr) {
+        $("#create-product-measure-product-id").val(data);
+        var f = document.getElementById("create-product-measure-form");
+        f.action = "/Product/CreateProductMeasures2";
+        f.submit();
+    }
+
+    function hide(id) {
+        $("#" + id).hide();
+    }
+
+    function show(id) {
+        $("#" + id).show();
+    }
+
+    function piecesChecked() {
+        if ($('#product-create-form-pieces').is(':checked')) {
+            show("quantity-pieces");
+        }
+        else {
+            hide("quantity-pieces");
+        }
+    }
+
+    function addCategorySelectionLevel(sender) {
+        if (sender != null) {
+            sender = $(sender);
+            sender.nextAll().hide();
+            var child = $('#CategoryId-' + sender.val());
+            if (child.length == 0) {
+                child = sender;
+            }
+            else {
+                child.children().first().prop("selected", true);
+            }
+            var current = $('select[name=CategoryId]');
+            if (current.attr("id") != child.attr("id")) {
+                child.show();
+                current.attr("name", "notused");
+                child.attr("name", "CategoryId");
+                child.attr("data-val", current.attr("data-val"));
+                child.attr("data-val-required", current.attr("data-val-required"));
+                current.removeAttr("data-val");
+                current.removeAttr("data-val-required");
+            }
+        }
+
+        /*
+        $.post('Url.Action("ProductCategoryDropDownList", "Product")',
+            {
+                parentId: parentId,
+                id: "CategoryId",
+                optionLabel: "--Wybierz kategorię--",
+                htmlAttributes: htmlAttributes
+            },
+            function (data) {
+                if (sender != null) {
+                    $('#' + sender.id).nextAll().remove()
+                }
+                $('#select-category').append(data);
+            }
+        );*/
+    }
+    
+</script>
+}

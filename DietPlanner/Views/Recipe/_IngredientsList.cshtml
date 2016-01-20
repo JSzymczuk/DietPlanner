@@ -1,0 +1,18 @@
+﻿@model ICollection<DietPlanner.ViewModels.IngredientListItemModel>
+
+<ul>
+    @foreach (var ingr in Model)
+    {
+        <li>
+            @Html.DisplayFor(c => ingr.Alias)
+            (@Html.DisplayFor(c => ingr.PortionWeight))
+            <br />
+            @Html.LabelFor(c => ingr.Protein)
+            @Html.DisplayFor(c => ingr.Protein)g
+            @Html.LabelFor(c => ingr.Carbohydrate)
+            @Html.DisplayFor(c => ingr.Carbohydrate)g
+            @Html.LabelFor(c => ingr.Fat)
+            @Html.DisplayFor(c => ingr.Fat)g
+        </li>
+    }
+</ul>

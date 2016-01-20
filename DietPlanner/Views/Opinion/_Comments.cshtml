@@ -1,0 +1,64 @@
+﻿@model DietPlanner.ViewModels.CommentsViewModel
+
+@{
+    bool isLogged = Model.UserId != null;
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "comments",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "$('#loading_modal').modal('show');",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+<div>
+    @if (isLogged)
+    {
+        @Html.Partial("~/Views/Opinion/_AddComment.cshtml", 
+            new DietPlanner.ViewModels.AddCommentModel { RecipeId = Model.RecipeId })
+    }
+    else
+    {
+        @Html.Raw("Zaloguj się, aby dodać komentarz.");
+    }
+</div>
+
+<div>
+    @if (Model.Comments.Count > 0)
+    {
+        <ol>
+            @foreach (var comment in Model.Comments)
+            {
+                <li>
+                    @Html.ActionLink(comment.AppUserInfo.UserName, "Details", "Account", new { id = comment.AppUserInfo.Id }, null)
+                    <br />
+                    @Html.DisplayFor(c => comment.Added)
+                    <br />
+                    @if (!string.IsNullOrEmpty(comment.Title))
+                    {
+                        <b>
+                            @Html.DisplayFor(c => comment.Title)
+                        </b>
+                        <br />
+                    }
+                    @Html.DisplayFor(c => comment.Content)
+                    <br />
+                    @if (isLogged && (Model.UserId == comment.AppUserInfo.Id || Model.UserIsAdmin))
+                    {
+                        @Ajax.ActionLink("Usuń", "DeleteComment", "Opinion", 
+                        new 
+                        { 
+                            @commentId = comment.Id, 
+                            @recipeId = Model.RecipeId
+                        }, options);
+                    }
+                </li>
+            }
+        </ol>
+    }
+    else
+    {
+        @Html.Raw("Nie ma jeszcze komentarzy.")
+    }
+</div>

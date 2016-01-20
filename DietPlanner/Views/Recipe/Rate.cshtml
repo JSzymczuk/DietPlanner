@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Ocena przepisu";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@if (Convert.ToBoolean(ViewBag.Success))
+{
+    @Html.Raw("Twój głos został oddany.")
+    <br />
+}
+else if (ViewBag.Error != null)
+{
+    @Html.Raw(ViewBag.Error.ToString())
+    <br />
+}
+
+Za chwilę dostaniesz przekierowany do strony głównej.
+<br />
+Kliknij @Html.ActionLink("tutaj", "Index", "Recipe"), aby nie czekać.
+    
+@section metatags
+{
+    <meta http-equiv="refresh" content="5; @Url.Action("Index", "Recipe")">
+}

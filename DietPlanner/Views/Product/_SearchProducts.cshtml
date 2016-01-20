@@ -1,0 +1,127 @@
+﻿@using DietPlanner.Helpers;
+@using DietPlanner.ViewModels;
+@using PagedList;
+@using PagedList.Mvc;
+@model PagedList<ProductSearchModel>
+
+<br />
+
+Strona @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount
+
+@{
+    ViewBag.Pager = Html.PagedListPager(Model, page => null, PagedListRenderOptions.PageNumbersOnly);
+}
+
+<div class="pager-container">
+    @Html.Raw(ViewBag.Pager)
+</div>
+
+<table class="table">
+    <tr>
+        <th>Nazwa produktu </th>
+        <th>Wartość odżywcza w 100g produktu</th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+            @if (!string.IsNullOrEmpty(item.PortionWeight))
+            {
+                @: (@Html.DisplayFor(modelItem => item.PortionWeight))
+            }
+            <br>w kategorii: 
+            @Html.ProductCategories(item)
+            @if (item.GlutenFree.HasValue)
+            {
+                <br>
+                @Html.Raw(item.GlutenFree.ToGlutenCategory().ToDisplayString())
+            }
+            
+            <br />
+            @Html.ActionLink("Miary", "MeasuresForProduct", new { @id = item.Id })
+            <br />
+            @Html.ActionLink("Nazwy miar", "DefinedMeasures", new { @productId = item.Id })
+            <br />
+            @Html.ActionLink("Miary możliwe do określenia", "DefinableMeasures", new { @productId = item.Id })
+
+        </td>
+        <td>
+            Białko: @(Html.DisplayFor(modelItem => item.Protein))g
+        <br>
+            Węglowodany: @(Html.DisplayFor(modelItem => item.Carbohydrate))g
+        
+            @if (item.Sugar.HasValue)
+            {
+                <br>
+                @:  w tym cukry: @Html.DisplayFor(modelItem => item.Sugar.Value) 
+                @:g
+            }
+        <br>
+            Tłuszcze: @(Html.DisplayFor(modelItem => item.Fat))g
+        
+            @if (item.SaturatedFat.HasValue)
+            {
+                <br>
+                @:  w tym nasycone: @Html.DisplayFor(modelItem => item.SaturatedFat.Value)
+                @:g
+            }
+            
+            @if (item.Cholesterol.HasValue)
+            {
+                <br>
+                @:Cholesterol: @Html.DisplayFor(modelItem => item.Cholesterol.Value)
+                @:g
+            }
+            
+            @if (item.Fiber.HasValue)
+            {
+                <br>
+                @:Błonnik: @Html.DisplayFor(modelItem => item.Fiber.Value)
+                @:g
+            }
+            
+            @if (item.Water.HasValue)
+            {
+                <br>
+                @:Woda: @Html.DisplayFor(modelItem => item.Water.Value)
+                @:g
+            }
+            
+            @if (item.Alcohol.HasValue)
+            {
+                <br>
+                @:Alkohol: @Html.DisplayFor(modelItem => item.Alcohol.Value)
+                @:g
+            }
+            
+            @if (item.Salt.HasValue)
+            {
+                <br>
+                @:Sól: @Html.DisplayFor(modelItem => item.Salt.Value)
+                @:g
+            }
+
+        </td>
+        <!--<td>
+            Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>-->
+    </tr>
+}
+
+</table>
+
+<div class="pager-container">
+    @Html.Raw(ViewBag.Pager)
+</div>
+
+<script>
+    $(".pager-container").on("click", "a", function () {
+        $('#page-number').val($(this).html());
+        submitForm();
+        return false;
+    });
+</script>

@@ -1,0 +1,41 @@
+﻿@model DietPlanner.ViewModels.IngredientCreateViewModel
+
+@{
+    string guid = Model.ProductId.ToString();
+}
+
+@Html.Raw(string.Format("<li id='ingr-{0}'>", guid))
+
+        @Html.TextBox("name-" + @guid, Model.Alias,
+        new
+        {
+            @placeholder = Model.ProductName,
+            @onchange = "changeAlias(this, '" + Model.ProductId + "');"
+        })
+
+        @(Html.TextBox("quant-" + guid, Model.Quantity, 
+        new 
+        { 
+            @type = "number", 
+            @min = "0", 
+            @max = "1000", 
+            @step = "1",
+            @onchange = "changeQuantity(this, '" + Model.ProductId + "');" })
+        )
+
+        @Html.DropDownListFor(model => Model.UnitId, Model.Measures, new { @class = "form-control" })
+
+        Białko:      @Html.DisplayFor(model => Model.TotalProtein)g
+        Węglowodany: @Html.DisplayFor(model => Model.TotalCarbohydrate)g
+        Tłuszcz:     @Html.DisplayFor(model => Model.TotalFat)g
+
+        @Html.HiddenFor(model => Model.BaseProtein)
+        @Html.HiddenFor(model => Model.BaseCarbohydrate)
+        @Html.HiddenFor(model => Model.BaseFat)
+
+        @Ajax.ActionLink("Usuń", "RemoveIngredient", new { id = guid }, new AjaxOptions
+        {
+            OnSuccess = "$('#ingr-" + guid + "').remove();"
+        })
+
+@Html.Raw("</li>")

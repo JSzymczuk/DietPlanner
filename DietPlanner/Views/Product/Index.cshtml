@@ -1,0 +1,81 @@
+﻿@using DietPlanner.Helpers;
+@using DietPlanner.ViewModels;
+@model ProductSearchViewModel
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Index";
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "searchResult",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "if(G_USE_LOADING_MODAL) { $('#loading_modal').modal('show'); }",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+<h2>Index</h2>
+<p>
+    @Html.ActionLink("Dodaj produkt", "Create")
+</p>
+
+@using (Ajax.BeginForm("SearchProducts", null, options, new { @id = "search-form" }))
+{
+    @(Html.TextBoxFor(model => Model.DataFilter.SearchKeyword, string.Empty,
+        new { @id = "search-keyword", @class = "form-control", @placeholder = "Nazwa produktu" }))
+    @(Html.DropDownListFor(model => Model.DataFilter.CategoryId, ViewBag.OrderedCategories as SelectList, "--Wybierz kategorię--",
+         new { @id = "search-category", @class = "form-control" }))
+    @Html.Label("Produktów na stronie", new { @class = "col-md-2 control-label" })
+    @(Html.DropDownListFor(model => Model.PageSize, new SelectList(new List<int> { 3, 5, 10, 20 }, 10),
+         new { @id = "search-page-size", @class = "form-control" }))
+
+    <br />
+    <div id="show-advanced">
+        <a onclick="showAdvanced();">Pokaż zaawansowane</a>
+    </div>
+    <div id="search-advanced" style="display: none;">
+        <a onclick="hideAdvanced();">Ukryj zaawansowane</a>
+        <br />
+        @Html.Label("Sortowanie: ", new { @class = "col-md-2 control-label" })
+        @Html.DropDownListFor(model => Model.SortType, ProductHelper.EnumProductSortType, null, 
+            new { @class = "form-control" })
+        <br />
+        @Html.Label("Proteiny: ", new { @class = "col-md-2 control-label" })
+        @(Html.TextBoxFor(model => Model.DataFilter.ProteinRange.MinValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" }))
+        @Html.Raw(" - ")
+        @(Html.TextBoxFor(model => Model.DataFilter.ProteinRange.MaxValue, 
+            new { @type = "number", @min = "0", @max = "100", @step = "1" }))
+        <br />
+        @Html.Label("Tłuszcz: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => Model.DataFilter.FatRange.MinValue, 
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBoxFor(model => Model.DataFilter.FatRange.MaxValue, 
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.Label("Węglowodany: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => Model.DataFilter.CarbRange.MinValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBoxFor(model => Model.DataFilter.CarbRange.MaxValue, 
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.CheckBoxFor(model => Model.DataFilter.GlutenFree, new { })
+        @Html.Label(" Tylko produkty bezglutenowe")
+        <br />
+        @Html.HiddenFor(model => Model.PageNumber, new { @id = "page-number" })
+        <input id="search-clear" type="button" value="Wyczyść" />
+        <input id="search-submit" type="button" value="Filtruj" />
+    </div>
+}
+
+<div id="searchResult">
+    @Html.Action("SearchProducts")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/search-general.js")
+}

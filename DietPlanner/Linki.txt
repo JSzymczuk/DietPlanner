@@ -1,0 +1,32 @@
+﻿Zestawienie o kaloriach zapewnianiych przez substancje 
+odżywcze i inne madre rzeczy o teorii żywienia:
+http://www.nutristrategy.com/nutrition/calories.htm
+
+Poradnik jak zrobić wielopoziomową listę rozwijaną: Chyba z tego jednak nie korzystałem.
+https://chikkanti.wordpress.com/2015/04/09/nested-dropdownlist-with-model-binding-in-mvc-5/
+
+http://stackoverflow.com/questions/12795429/auto-submit-form-after-10-characters
+
+http://www.dotnetfunda.com/articles/show/2912/loading-search-result-without-page-refresh-in-aspnet-mvc-ajax
+
+Informacje o produktach (amerykańskie precyzyjne tabelki):
+http://ndb.nal.usda.gov/ndb/foods
+
+Informacje o produktach (polskie ogólne tabelki):
+http://www.tabele-kalorii.pl/
+
+Informacje o produktach:
+https://www.fatsecret.com/calories-nutrition
+
+Przelicznik jednostek kuchennych:
+http://www.convert-me.com/en/convert/cooking/
+
+Jednostki kucehnne i przykładowe przeliczanie objętości:
+https://pl.wikipedia.org/wiki/Jednostki_miar_stosowane_w_gospodarstwie_domowym
+
+Artykuł dlaczego wybrać ciasteczka zamiast sesji (może do części teoretycznej?):
+http://brockallen.com/2012/04/07/think-twice-about-using-session-state/ <-- co złego jest w sesjach
+Do części teoretycznej dorzucić opis jak działają ciastka.
+
+View modele
+https://lostechies.com/jimmybogard/2009/06/30/how-we-do-mvc-view-models/

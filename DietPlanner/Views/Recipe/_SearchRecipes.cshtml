@@ -1,0 +1,82 @@
+﻿@using DietPlanner.Helpers;
+@using PagedList;
+@using PagedList.Mvc;
+@using DietPlanner.ViewModels;
+@model PagedList<RecipeSearchModel>
+
+<br />
+
+Strona @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount
+
+@{
+    ViewBag.Pager = Html.PagedListPager(Model, page => null, PagedListRenderOptions.PageNumbersOnly);
+}
+
+<div class="pager-container">
+    @Html.Raw(ViewBag.Pager)
+</div>
+
+<table class="table">
+    <tr>
+        <th>Nazwa produktu </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "Details", new { id = item.Id })
+                 (@Html.DisplayFor(modelItem => item.Weight)g)
+                <br>w kategorii:
+                @Html.CategorySearchLink(item.Category)
+                <br>dodano: 
+                @Html.DisplayFor(modelItem => @item.Added)
+                
+                @if (item.Vegetarian)
+                {
+                    @Html.Display("Przepis wegetariański")
+                }
+                @if (item.GlutenFree)
+                {
+                    <br>
+                    @Html.DisplayFor(modelItem => item.GlutenFree)
+                }
+                
+                <br>Ocena: 
+                @if (item.Rating != 0)
+                {
+                    @Html.DisplayFor(modelItem => @item.Rating)
+                }
+                else
+                {
+                    @Html.Raw("Nie oceniono")
+                }
+
+                <br>Komentarze: 
+                @Html.DisplayFor(modelItem => @item.Comments)
+
+                <br>
+                Kalorie: @(Html.DisplayFor(modelItem => item.Calories))g
+                <br>
+                Białko: @Html.Raw(string.Format("{0:0.0}", item.Protein))g
+                <br>
+                Węglowodany: @Html.Raw(string.Format("{0:0.0}", item.Carbohydrate))g
+                <br>
+                Tłuszcze: @Html.Raw(string.Format("{0:0.0}", item.Fat))g                
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div class="pager-container">
+    @Html.Raw(ViewBag.Pager)
+</div>
+
+<script>
+    $(".pager-container").on("click", "a", function () {
+        $('#page-number').val($(this).html());
+        submitForm();
+        return false;
+    });
+</script>

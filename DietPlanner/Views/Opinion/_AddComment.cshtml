@@ -1,0 +1,30 @@
+﻿@model DietPlanner.ViewModels.AddCommentModel
+
+@{
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "comments",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "$('#loading_modal').modal('show');",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+@using (Ajax.BeginForm("AddComment", "Opinion", null, options, new { @id = "add-comment-form" }))
+{
+    @(Html.TextBoxFor(model => Model.Title, string.Empty,
+        new { @id = "form-comment-title", @class = "form-control", @placeholder = "Tytuł komentarza" }))
+    @(Html.TextAreaFor(model => Model.Content,
+            new { @id = "form-comment-content", @class = "form-control", @placeholder = "Treść komentarza" }))
+    @Html.HiddenFor(model => Model.RecipeId)
+    <input id="add-comment-submit" type="button" value="Dodaj" />
+}
+
+<script>
+    $("#add-comment-submit").click(function () { submitAddComment(); });
+
+    function submitAddComment() {
+        $("#add-comment-form").submit();
+    }
+</script>

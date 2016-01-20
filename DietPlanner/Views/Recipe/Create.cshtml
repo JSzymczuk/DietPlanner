@@ -1,0 +1,164 @@
+﻿@using DietPlanner.Helpers;
+@using DietPlanner.ViewModels;
+@model AddRecipeViewModel
+
+@{
+    ViewBag.Title = "Create";
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "searchResult",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "if(G_USE_LOADING_MODAL) { $('#loading_modal').modal('show'); }",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("CreateRecipe", "Recipe", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Dodaj nowy przepis.</h4>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.PreparationTime, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.PreparationTime, new { @class = "form-control", @type="number" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Vegetarian, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.Vegetarian, new { id = "product-create-form-pieces", @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CategoryId, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.CategoryId, ViewBag.Categories as SelectList, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div id="ingredients">
+        @Html.Action("GetCreatedRecipe", new { })
+    </div>
+
+    <!--Html.ActionLink("Dodaj go", "Create", "Product").-->
+
+    <div class="form-group">
+        Nie znalazłeś produktu? Dodaj go.
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Dodaj produkt" formaction="@Url.Action("StoreRecipeAndAddProduct", "Recipe")"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Dodaj przepis" />
+        </div>
+    </div>
+}
+
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@using (Ajax.BeginForm("SearchProductsForRecipe", "Product", null, options, new { @id = "search-form" }))
+{
+    @(Html.TextBoxFor(model => Model.DataFilter.SearchKeyword, string.Empty,
+        new { @id = "search-keyword", @class = "form-control", @placeholder = "Nazwa produktu" }))
+    @(Html.DropDownListFor(model => Model.DataFilter.CategoryId, ViewBag.OrderedCategories as SelectList, "--Wybierz kategorię--",
+         new { @id = "search-category", @class = "form-control" }))
+    @Html.Label("Produktów na stronie", new { @class = "col-md-2 control-label" })
+    @(Html.DropDownListFor(model => Model.PageSize, new SelectList(new List<int> { 3, 5, 10, 20 }, 10),
+         new { @id = "search-page-size", @class = "form-control" }))
+
+    <br />
+    <div id="show-advanced">
+        <a onclick="showAdvanced();">Pokaż zaawansowane</a>
+    </div>
+    <div id="search-advanced" style="display: none;">
+        <a onclick="hideAdvanced();">Ukryj zaawansowane</a>
+        <br />
+        @Html.Label("Sortowanie: ", new { @class = "col-md-2 control-label" })
+        @Html.DropDownListFor(model => Model.SortType, ProductHelper.EnumProductSortType, null,
+            new { @class = "form-control" })
+        <br />
+        @Html.Label("Proteiny: ", new { @class = "col-md-2 control-label" })
+        @(Html.TextBoxFor(model => Model.DataFilter.ProteinRange.MinValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" }))
+        @Html.Raw(" - ")
+        @(Html.TextBoxFor(model => Model.DataFilter.ProteinRange.MaxValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" }))
+        <br />
+        @Html.Label("Tłuszcz: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => Model.DataFilter.FatRange.MinValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBoxFor(model => Model.DataFilter.FatRange.MaxValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.Label("Węglowodany: ", new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => Model.DataFilter.CarbRange.MinValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        @Html.Raw(" - ")
+        @Html.TextBoxFor(model => Model.DataFilter.CarbRange.MaxValue,
+            new { @type = "number", @min = "0", @max = "100", @step = "1" })
+        <br />
+        @Html.CheckBoxFor(model => Model.DataFilter.GlutenFree, new { })
+        @Html.Label(" Tylko produkty bezglutenowe")
+        <br />
+        @Html.HiddenFor(model => Model.PageNumber, new { @id = "page-number" })
+        <input id="search-clear" type="button" value="Wyczyść" />
+        <input id="search-submit" type="button" value="Filtruj" />
+    </div>
+}
+
+<div id="searchResult">
+    @Html.Action("SearchProductsForRecipe", "Product")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/search-general.js")
+    <script>
+        function changeQuantity(sender, id) {
+            jQuery.ajax({
+                url: '@Url.Action("UpdateIngredientQuantity", "Recipe")',
+                type: 'GET',
+                data: { productId: id, quantity: sender.value },
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    $("#" + sender.id + "-next").html(data[0]);
+                    $("#total-nutr").html(data[1]);
+                }
+            });
+        }
+        function changeAlias(sender, id) {
+            jQuery.ajax({
+                url: '@Url.Action("UpdateIngredientAlias", "Recipe")',
+                type: 'GET',
+                data: { productId: id, alias: sender.value },
+                success: function (result) { }
+            });
+        }
+    </script>
+}

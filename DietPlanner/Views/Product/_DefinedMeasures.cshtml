@@ -1,0 +1,32 @@
+﻿@model SelectList
+
+@{
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "create-measure-form",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "if(G_USE_LOADING_MODAL) { $('#loading_modal').modal('show'); }",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+<br />
+
+@using (Ajax.BeginForm("SearchProducts", "Product", null, options, new { @id = "select-measure-form" }))
+{
+    @Html.Display("Domyślna jednostka", new { @class = "col-md-2 control-label" })
+    @Html.DropDownListFor(model => model, Model, new { @class = "form-control", @id = "select-measure-list" })
+}
+
+@using (Ajax.BeginForm("SearchProducts", "Product", null, options, new { @id = "create-measure-form" }))
+{
+    @Html.Display("Domyślna jednostka", new { @class = "col-md-2 control-label" })
+    @Html.DropDownListFor(model => model, Model, new { @class = "form-control", @id = "create-measure-list" })
+}
+
+<script>
+    $("#select-measure-list").change(function () {
+        $("#select-measure-form").submit();
+    });
+</script>

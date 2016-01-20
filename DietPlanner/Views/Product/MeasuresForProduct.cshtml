@@ -1,0 +1,70 @@
+﻿@using DietPlanner.Helpers;
+@model IEnumerable<DietPlanner.Models.MeasureInfo>
+
+@{
+    ViewBag.Title = "Measures";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateMeasure")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            Przelicznik
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsGeneralMeasure)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                1 @Html.DisplayFor(modelItem => item.Name.Name)
+                @if (!string.IsNullOrEmpty(item.Name.NameDecimal))
+                {
+                    @: (@Html.DisplayFor(modelItem => item.Name.Short)
+                    @: )
+                }
+                @if (!string.IsNullOrEmpty(item.Name.NamePlural1))
+                {
+                    @: / 2 @Html.DisplayFor(modelItem => item.Name.NamePlural1)
+                }
+                @if (!string.IsNullOrEmpty(item.Name.NamePlural2))
+                {
+                    @: / 5 @Html.DisplayFor(modelItem => item.Name.NamePlural2)
+                }
+                @if (!string.IsNullOrEmpty(item.Name.NameDecimal))
+                {
+                    @: / 0.5 @Html.DisplayFor(modelItem => item.Name.NameDecimal)
+                }
+            </td>
+            <td>
+                @if (item.HasBase)
+                { 
+                    @Html.Raw(item.BaseName.QuantityString(item.Base, 0, false, true))
+                    @: = 
+                    @Html.Raw(item.Name.QuantityString(item.Derived, 0, false, true))
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsGeneralMeasure)
+            </td>
+            <td>
+                @if (!item.Verified)
+                {
+                    @Html.ActionLink("Delete", "DeleteMeasure", new { id = item.Id })
+                }
+            </td>
+        </tr>
+    }
+
+</table>

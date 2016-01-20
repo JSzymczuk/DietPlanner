@@ -1,0 +1,57 @@
+﻿@model DietPlanner.ViewModels.CreateProductMeasuresViewModel
+
+@{
+    AjaxOptions options = new AjaxOptions
+    {
+        UpdateTargetId = "product-measures",
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        OnBegin = "$('#loading_modal').modal('show');",
+        OnComplete = "$('#loading_modal').modal('hide');"
+    };
+}
+
+<div class="form-group">
+    @Html.Label("Domyślna jednostka", new { @class = "col-md-2 control-label" })
+    <div class="col-md-10" id="select-default-measure">
+        @Html.DropDownListFor(model => model.DefaultUnitId, Model.DefinedMeasures, new { @class = "form-control" })
+    </div>
+</div>
+
+@using (Ajax.BeginForm("CreateProductMeasures", null, options, new { @id = "create-product-measure-form" }))
+{
+    @(Html.DropDownListFor(m => m.NewMeasureId, Model.DefinableMeasures, 
+        new { @class = "form-control" }))
+    <input type="submit" value="Dodaj jednostkę" id="create-product-measure-submit" />
+
+    @Html.HiddenFor(modelItem => Model.ProductId, new { @id = "create-product-measure-product-id" })
+    for (int i = 0; i < Model.ProductMeasures.Count; i++)
+    {
+        <div> 
+            @Html.HiddenFor(modelItem => Model.ProductMeasures[i].UnitId)
+            @Html.HiddenFor(modelItem => Model.ProductMeasures[i].BaseName)
+            @Html.HiddenFor(modelItem => Model.ProductMeasures[i].DerivedName)
+
+            @Html.TextBoxFor(modelItem => Model.ProductMeasures[i].Derived)
+            @Html.Raw(" ")
+            @Html.DisplayFor(modelItem => Model.ProductMeasures[i].DerivedName)
+            @Html.Raw(" = ")
+            @Html.TextBoxFor(modelItem => Model.ProductMeasures[i].Base)
+            @Html.Raw(" ")
+            @Html.DisplayFor(modelItem => Model.ProductMeasures[i].BaseName)
+        </div>
+    }
+
+    <input type="submit" id="create-product-measure-submit-2" style="display: none;" value="Zapisz kategorie" formaction="@Url.Action("CreateProductMeasures2", "Product")" />
+}
+<script>
+    $("#UnitId").val($("#DefaultUnitId").val());
+
+    $("#create-product-measure-submit").click(function () {
+        $("#create-product-measure-form").submit();
+    });
+
+    $("#DefaultUnitId").change(function () {
+        $("#UnitId").val($("#DefaultUnitId").val());
+    });
+</script>

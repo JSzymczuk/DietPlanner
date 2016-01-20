@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "Dodawanie przepisu";
+}
+
+<h2>@ViewBag.Title</h2>
+
+Przepis został dodany.
+<br />
+Za chwilę dostaniesz przekierowany do strony głównej.
+<br />
+Kliknij @Html.ActionLink("tutaj", "Index", "Home"), aby nie czekać.
+
+@section metatags
+{
+    <meta http-equiv="refresh" content="5; @Url.Action("Index", "Home")">
+}

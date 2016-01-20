@@ -1,0 +1,16 @@
+﻿@using DietPlanner.ViewModels;
+@model MeasureRatio
+
+@{
+    ViewBag.Title = "DefineMeasures";
+}
+
+@if (Model != null)
+{
+    @Html.EditorFor(model => model.Derived, new { })
+    @Html.Raw(string.Format(" {0} = ", Model.BaseName))
+    @Html.EditorFor(model => model.Base, new { })
+    @Html.Raw(string.Format(" {0}", Model.DerivedName))
+}
+
+
